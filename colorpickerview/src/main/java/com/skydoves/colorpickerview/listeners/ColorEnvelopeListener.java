@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2017 skydoves
  *
@@ -15,25 +14,20 @@
  * limitations under the License.
  */
 
-package com.skydoves.colorpickerview;
+package com.skydoves.colorpickerview.listeners;
 
-import android.widget.ImageView;
+import com.skydoves.colorpickerview.ColorEnvelope;
 
-public class Selector {
-
-    private ImageView selector;
-    private ColorListener colorListener;
-
-    public Selector(ImageView selector, ColorListener colorListener) {
-        this.selector = selector;
-        this.colorListener = colorListener;
-    }
-
-    public ImageView getSelector() {
-        return selector;
-    }
-
-    public ColorListener getColorListener() {
-        return colorListener;
-    }
+/**
+ * ColorEnvelopeListener is invoked whenever {@link com.skydoves.colorpickerview.ColorPickerView} is
+ * triggered.
+ */
+public interface ColorEnvelopeListener extends ColorPickerViewListener {
+  /**
+   * invoked by {@link com.skydoves.colorpickerview.ColorPickerView}.
+   *
+   * @param envelope {@link ColorEnvelope}
+   * @param fromUser triggered by the user(true) or not(false).
+   */
+  void onColorSelected(ColorEnvelope envelope, boolean fromUser);
 }
