@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 /**
  * AlphaTileDrawable visualizes ARGB color on the {@link
  * com.skydoves.colorpickerview.AlphaTileView}.
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class AlphaTileDrawable extends Drawable {
 
   private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -116,20 +116,20 @@ public class AlphaTileDrawable extends Drawable {
       return this;
     }
 
-    public int getTileOddColor() {
+    public @ColorInt int getTileOddColor() {
       return tileOddColor;
     }
 
-    public Builder setTileOddColor(int color) {
+    public Builder setTileOddColor(@ColorInt int color) {
       this.tileOddColor = color;
       return this;
     }
 
-    public int getTileEvenColor() {
+    public @ColorInt int getTileEvenColor() {
       return tileEvenColor;
     }
 
-    public Builder setTileEvenColor(int color) {
+    public Builder setTileEvenColor(@ColorInt int color) {
       this.tileEvenColor = color;
       return this;
     }

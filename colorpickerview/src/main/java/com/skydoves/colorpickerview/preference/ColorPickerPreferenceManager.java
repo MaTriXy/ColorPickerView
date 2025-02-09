@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import com.skydoves.colorpickerview.ColorPickerView;
  *
  * <p>for {@link com.skydoves.colorpickerview.ColorPickerView}.
  */
-@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ColorPickerPreferenceManager {
 
   protected static final String COLOR = "_COLOR";
@@ -35,7 +35,7 @@ public class ColorPickerPreferenceManager {
   protected static final String AlphaSlider = "_SLIDER_ALPHA";
   protected static final String BrightnessSlider = "_SLIDER_BRIGHTNESS";
   private static ColorPickerPreferenceManager colorPickerPreferenceManager;
-  private SharedPreferences sharedPreferences;
+  private final SharedPreferences sharedPreferences;
 
   private ColorPickerPreferenceManager(Context context) {
     sharedPreferences =
@@ -49,8 +49,9 @@ public class ColorPickerPreferenceManager {
    * @return {@link ColorPickerPreferenceManager}.
    */
   public static ColorPickerPreferenceManager getInstance(Context context) {
-    if (colorPickerPreferenceManager == null)
+    if (colorPickerPreferenceManager == null) {
       colorPickerPreferenceManager = new ColorPickerPreferenceManager(context);
+    }
     return colorPickerPreferenceManager;
   }
 
@@ -205,8 +206,13 @@ public class ColorPickerPreferenceManager {
       String name = colorPickerView.getPreferenceName();
       setColor(name, colorPickerView.getColor());
       setSelectorPosition(name, colorPickerView.getSelectedPoint());
-      setAlphaSliderPosition(name, colorPickerView.getAlphaSlideBar().getSelectedX());
-      setBrightnessSliderPosition(name, colorPickerView.getBrightnessSlider().getSelectedX());
+
+      if (colorPickerView.getAlphaSlideBar() != null) {
+        setAlphaSliderPosition(name, colorPickerView.getAlphaSlideBar().getSelectedX());
+      }
+      if (colorPickerView.getBrightnessSlider() != null) {
+        setBrightnessSliderPosition(name, colorPickerView.getBrightnessSlider().getSelectedX());
+      }
     }
   }
 
@@ -222,10 +228,10 @@ public class ColorPickerPreferenceManager {
       Point defaultPoint =
           new Point(
               colorPickerView.getMeasuredWidth() / 2, colorPickerView.getMeasuredHeight() / 2);
-      colorPickerView.setCoordinate(
-          getSelectorPosition(name, defaultPoint).x, getSelectorPosition(name, defaultPoint).y);
-      colorPickerView.setSelectorPoint(
-          getSelectorPosition(name, defaultPoint).x, getSelectorPosition(name, defaultPoint).y);
+      colorPickerView.moveSelectorPoint(
+          getSelectorPosition(name, defaultPoint).x,
+          getSelectorPosition(name, defaultPoint).y,
+          getColor(name, -1));
     }
   }
 

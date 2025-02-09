@@ -1,37 +1,74 @@
-# ColorPickerView
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![API](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
-[![Build Status](https://travis-ci.org/skydoves/ColorPickerView.svg?branch=master)](https://travis-ci.org/skydoves/ColorPickerView)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e5d06ece54644717845a059f90632660)](https://www.codacy.com/app/skydoves/ColorPickerView?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=skydoves/ColorPickerView&amp;utm_campaign=Badge_Grade)
-[![Android Weekly](https://img.shields.io/badge/Android%20Weekly-%23316-orange.svg)](https://androidweekly.net/issues/issue-316)
-[![Javadoc](https://img.shields.io/badge/Javadoc-ColorPickerView-yellow.svg)](https://skydoves.github.io/libraries/colorpickerview/javadoc/) <br>
-ColorPickerView implements getting HSV colors, ARGB values, Hex color codes from <br>
-any image drawables or your gallery pictures by tapping on the desired color.<br>
-Supports alpha & brightness slider bar, dialog, and auto saving & restoring selected data.<br>
+<h1 align="center">ColorPickerView</h1></br>
+<p align="center">
+🎨 ColorPickerView implements getting HSV colors, ARGB values, Hex color codes from any image drawables or your gallery pictures by tapping on the desired color. It also supports alpha & brightness slider bar, dialog, and saving & restoring selected data.
+</p>
+<br>
 
+<p align="center">
+  <a href="https://devlibrary.withgoogle.com/products/android/repos/skydoves-colorpickerview"><img alt="Google" src="https://skydoves.github.io/badges/google-devlib.svg"/></a><br>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
+  <a href="https://android-arsenal.com/api?level=15"><img alt="API" src="https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat"/></a>
+  <a href="https://github.com/skydoves/ColorPickerView/actions"><img alt="Build Status" src="https://github.com/skydoves/ColorPickerView/workflows/Android%20CI/badge.svg"/></a>
+  <a href="https://androidweekly.net/issues/issue-316"><img alt="Android Weekly" src="https://skydoves.github.io/badges/android-weekly.svg"/></a>
+  <a href="https://skydoves.github.io/libraries/colorpickerview/javadoc/"><img alt="Javadoc" src="https://skydoves.github.io/badges/javadoc-colorpicker.svg"/></a>
+</p> <br>
 
-![img0](https://user-images.githubusercontent.com/24237865/45309043-ccf51580-b55d-11e8-8985-02fc2d3a7250.jpg) 
-![img1](https://user-images.githubusercontent.com/24237865/45308725-1db83e80-b55d-11e8-84b0-1d48c0405365.jpg)
+<p align="center">
+<img src="/art/art0.gif" width="31%"/>
+<img src="/art/art1.gif" width="31%"/>
+</p>
 
 ## Including in your project 
-[![Download](https://api.bintray.com/packages/devmagician/maven/colorpickerview/images/download.svg) ](https://bintray.com/devmagician/maven/colorpickerview/_latestVersion)
-[![Jitpack](https://jitpack.io/v/skydoves/ColorPickerView.svg)](https://jitpack.io/#skydoves/ColorPickerView)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.skydoves/colorpickerview.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.skydoves%22%20AND%20a:%22colorpickerview%22)
+
 ### Gradle 
 Add below codes to your **root** `build.gradle` file (not your module build.gradle file).
 ```gradle
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 ```
 And add a dependency code to your **module**'s `build.gradle` file.
 ```gradle
 dependencies {
-    implementation "com.github.skydoves:colorpickerview:2.1.0"
+    implementation "com.github.skydoves:colorpickerview:2.2.4"
 }
 ```
-    
+
+## SNAPSHOT 
+[![ColorPickerView](https://img.shields.io/static/v1?label=snapshot&message=ColorPickerView&logo=apache%20maven&color=C71A36)](https://oss.sonatype.org/content/repositories/snapshots/com/github/skydoves/colorpickerview/) <br>
+Snapshots of the current development version of ColorPickerView are available, which track [the latest versions](https://oss.sonatype.org/content/repositories/snapshots/com/github/skydoves/colorpickerview/).
+```Gradle
+repositories {
+   maven {
+     url 'https://oss.sonatype.org/content/repositories/snapshots/'
+   }
+}
+```
+
+<img src="https://user-images.githubusercontent.com/24237865/53681606-38f75000-3d2f-11e9-8586-848d638f23b1.gif" align="right" width="30%">
+
+## Table of Contents
+#### [1. ColorPickerView](https://github.com/skydoves/ColorPickerView#usage)
+- [ColorPickerView in layout](https://github.com/skydoves/ColorPickerView#colorpickerview-in-xml-layout)
+- [ColorListener](https://github.com/skydoves/ColorPickerView#colorlistener)
+- [Palette](https://github.com/skydoves/ColorPickerView#palette)
+- [ActionMode](https://github.com/skydoves/ColorPickerView#actionmode)
+- [Debounce](https://github.com/skydoves/ColorPickerView#debounce)
+- [Create using builder](https://github.com/skydoves/ColorPickerView#create-using-builder)
+- [Restore and save state](https://github.com/skydoves/ColorPickerView#restore-and-save)
+- [Palette from Gallery](https://github.com/skydoves/ColorPickerView#palette-from-gallery) <br>
+
+__[2. AlphaSlideBar](https://github.com/skydoves/ColorPickerView#alphaslidebar)__ <br>
+__[3. BrightnessSlideBar](https://github.com/skydoves/ColorPickerView#brightnessslidebar)__<br>
+__[4. ColorPickerDialog](https://github.com/skydoves/ColorPickerView#colorpickerdialog)__ <br>
+__[5. FlagView](https://github.com/skydoves/ColorPickerView#flagview)__ <br>
+__[6. AlphaTileView](https://github.com/skydoves/ColorPickerView#alphatileview)__ <br>
+__[7. ColorPickerView Methods](https://github.com/skydoves/ColorPickerView#colorpickerview-methods)__ <br>
+__[8. Other Libraries](https://github.com/skydoves/ColorPickerView#other-libraries)__ <br>
+
 ## Usage
 Add following XML namespace inside your XML layout file.
 
@@ -39,28 +76,33 @@ Add following XML namespace inside your XML layout file.
 xmlns:app="http://schemas.android.com/apk/res-auto"
 ```
 
-### ColorPickerView in layout
+### ColorPickerView in XML layout
+We can use `ColorPickerView` without any customized attributes.<br>
+This `ColorPickerView` will be initialized with the default HSV color palette and default selector.
 ```gradle
 <com.skydoves.colorpickerview.ColorPickerView
-     android:id="@+id/colorPickerView"
-     android:layout_width="300dp"
-     android:layout_height="300dp"
-     app:palette="@drawable/palette"
-     app:selector="@drawable/wheel" />
+   android:id="@+id/colorPickerView"
+   android:layout_width="300dp"
+   android:layout_height="300dp" />
 ```
 
 ### Attribute descriptions
+We can customize the palette image and selector or various options using the below attributes.
 ```gradle
-app:palette="@drawable/palette" // sets palette image.
-app:selector="@drawable/wheel" // sets selector image.
-app:alpha_selector="0.8" // sets selector's alpha.
-app:alpha_flag="0.8" // sets flag's alpha.
-app:actionMode="last" // sets action mode "always" or "last".
-app:preferenceName="MyColorPicker" // sets preference name.
+app:palette="@drawable/palette" // sets a custom palette image.
+app:selector="@drawable/wheel" // sets a custom selector image.
+app:selector_size="32dp" // sets a width & height size of the selector.
+app:alpha_selector="0.8" // sets an alpha of thr selector.
+app:alpha_flag="0.8" // sets an alpha of the flag.
+app:actionMode="last" // sets action mode 'always' or 'last'.
+// set an initial position of the selector using a specific color. This attribute will work with only a default HSV palette.
+app:initialColor="@color/colorPrimary"
+app:preferenceName="MyColorPicker" // sets a preference name.
+app:debounceDuration="200" // sets a debounce duration of the invoking color listener.
 ```
 
-### ColorListener Listener
-ColorListener is invoked whenever tapped by a user or selecting position manually.
+### ColorListener
+`ColorListener` is invoked when tapped by a user or selected a position by a function.
 ```java
 colorPickerView.setColorListener(new ColorListener() {
     @Override
@@ -71,8 +113,17 @@ colorPickerView.setColorListener(new ColorListener() {
 });
 ```
 
+### ColorEnvelope
+`ColorEnvelope` is a wrapper class of color models for providing more variety of color models.<br>
+We can get HSV color value, Hex string code, ARGB value from the `ColorEnvelope`.
+```java
+colorEnvelope.getColor() // returns a integer color.
+colorEnvelope.getHexCode() // returns a hex code string.
+colorEnvelope.getArgb() // returns a argb integer array.
+```
+
 ### ColorEnvelope Listener
-ColorEnvelopeListener provides hsv color, hex code, argb by `ColorEnvelope`.
+`ColorEnvelopeListener` extends `ColorListener` and it provides `ColorEnvelope` as a parameter.
 ```java
 colorPickerView.setColorListener(new ColorEnvelopeListener() {
     @Override
@@ -83,18 +134,38 @@ colorPickerView.setColorListener(new ColorEnvelopeListener() {
 });
 ```
 
-### ColorEnvelope
-ColorEnvelope is a wrapper class of colors for provide various forms of color.
+### Palette
+If we do not set any customized palette, the default palette drawable is the `ColorHsvPalette`.<br>
+We can move and select a point on the palette using a specific color using the below methods.
 ```java
-colorEnvelope.getColor() // returns a integer color.
-colorEnvelope.getHexCode() // returns a hex code string.
-colorEnvelope.getArgb() // returns a argb integer array.
+colorPickerView.selectByHsvColor(color);
+colorPickerView.selectByHsvColorRes(R.color.colorPrimary);
+```
+We can change the default palette as a desired image drawable using the below method.<br>
+But if we change the palette using another drawable, we can not use the `selectByHsvColor` method.
+```java
+colorPickerView.setPaletteDrawable(drawable);
+```
+If we want to change back to the default palette, we can change it using the below method.
+```java
+colorPickerView.setHsvPaletteDrawable();
 ```
 
 ### ActionMode
-ActionMode controls an action about `ColorListener` invoking.
+`ActionMode` is an option restrict to invoke the `ColorListener` by user actions.
 ```java
-colorPickerView.setActionMode(ActionMode.LAST); // the listener will be invoked only when finger released.
+colorPickerView.setActionMode(ActionMode.LAST); // ColorListener will be invoked when the finger is released.
+```
+
+### Debounce
+Only emits color values to the listener if a particular timespan has passed without it emitting using `debounceDuration` attribute.
+We can set the `debounceDuration` on our xml layout file.
+```xml
+app:debounceDuration="150"  
+```
+Or we can set it programmatically.
+```java
+colorPickerView.setDebounceDuration(150);
 ```
 
 ### Create using builder
@@ -112,50 +183,63 @@ ColorPickerView colorPickerView = new ColorPickerView.Builder(context)
       .build();
 ```
 
+### Initial color
+We can set an initial color and set positions of selector and slideBars based on the initial color.<br>
+This function will work only with a default HSV palette.<br>
+If we set preference name using the `setPreferenceName` method,  this function will work only once.
+```gradle
+app:initialColor="@color/colorPrimary"
+```
+Or we can use this method programmatically.
+```java
+.setInitialColor(color);
+.setInitialColorRes(R.color.colorPrimary);
+```
+
 ### Restore and save
-This is how to restore the status for `ColorPickerView`.<br>
-Using `setPreferenceName()` method restores all of the saved statuses automatically.
+This is how to restore the state of `ColorPickerView`.<br>
+`setPreferenceName()` method restores all of the saved states (selector, color) automatically.
 
 ```java
 colorPickerView.setPreferenceName("MyColorPicker");
 ```
 
-This is how to save the status for `ColorPickerView`.<br>
-Using `setLifecycleOwner()` method saves all of the statuses when the lifecycleOwner's destroy automatically.
+This is how to save the states of `ColorPickerView`.<br>
+`setLifecycleOwner()` method saves all of the states automatically when the lifecycleOwner is destroy.
 ```java
-colorPickerView.setLifecycleOwner(this); // this means activity or fragment.
+colorPickerView.setLifecycleOwner(this);
 ```
-Or we can save the status manually regardless lifecycle using below method.
+Or we can save the states manually using the below method.
 ```java
 ColorPickerPreferenceManager.getInstance(this).saveColorPickerData(colorPickerView);
 ```
 
 ### Manipulate and clear
-We can manipulate and clear the saved statuses using `ColorPickerPreferenceManager`.
+We can manipulate and clear the saved states using `ColorPickerPreferenceManager`.
 ```java
 ColorPickerPreferenceManager manager = ColorPickerPreferenceManager.getInstance(this);
 manager.setColor("MyColorPicker", Color.RED); // manipulates the saved color data.
 manager.setSelectorPosition("MyColorPicker", new Point(120, 120)); // manipulates the saved selector's position data.
-manager.clearSavedAllData(); // clears all of the statuses.
+manager.clearSavedAllData(); // clears all of the states.
 manager.clearSavedColor("MyColorPicker"); // clears only saved color data. 
-manager.restoreColorPickerData(colorPickerView); // restores the saved statuses manually.
+manager.restoreColorPickerData(colorPickerView); // restores the saved states manually.
 ```
 
-### Pallette from Gallery
-Here is how to get bitmap drawable from the desired gallery image and set to the palette.<br><br>
+### Palette from Gallery
+Here is how to get a bitmap drawable from the gallery image and set it to the palette.<br><br>
 <img src="https://user-images.githubusercontent.com/24237865/52941911-313dc000-33ad-11e9-8264-6d78f4ad613a.jpg" align="left" width="35%">
 
-Firstly, declare below permission on your `AndroidManifest.xml` file.
+Declare below permission on your `AndroidManifest.xml` file.
 ```gradle
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
-startActivityForResult for getting an image from the Gallery.
+The below codes will start the Gallery and we can choose the desired image.
 ```java
 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 photoPickerIntent.setType("image/*");
 startActivityForResult(photoPickerIntent, REQUEST_CODE_GALLERY);
 ```
-On the onActivityResult, we can get a bitmap drawable from the gallery and set it as the palette.
+In the `onActivityResult`, we can get a bitmap drawable from the gallery and set it as the palette. And We can change the palette image of the `ColorPickerView` using the `setPaletteDrawable` method.
 ```java
 try {
   final Uri imageUri = data.getData();
@@ -168,57 +252,56 @@ try {
 }
 ```
 
-
-## AlphaSlideBar(Optional)
+## AlphaSlideBar
 AlphaSlideBar changes the transparency of the selected color. <br><br>
-<img src="https://user-images.githubusercontent.com/24237865/52943592-d1e1af00-33b0-11e9-9e3c-9a1190ae969e.gif" align="left" width="31%">
+<img src="https://user-images.githubusercontent.com/24237865/90913596-6ea66200-e417-11ea-893a-467e93189c2b.gif" align="left" width="31%">
 
-`AlphaSlideBar` on xml layout
+`AlphaSlideBar` in XML layout
 ```gradle
 <com.skydoves.colorpickerview.sliders.AlphaSlideBar
    android:id="@+id/alphaSlideBar"
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
-   app:selector_AlphaSlideBar="@drawable/wheel" // sets the selector drawable.
-   app:borderColor_AlphaSlideBar="@android:color/darker_gray" // sets the border color.
-   app:borderSize_AlphaSlideBar="5"/> // sets the border size.
+   app:selector_AlphaSlideBar="@drawable/wheel" // sets a customized selector drawable.
+   app:borderColor_AlphaSlideBar="@android:color/darker_gray" // sets a color of the border.
+   app:borderSize_AlphaSlideBar="5"/> // sets a size of the border.
 ```
-`attachAlphaSlider` method connects slider to the `ColorPickerView`.
+We can attach and connect the `AlphaSlideBar` to our `ColorPickerView` using `attachAlphaSlider` method.
 
 ```java
 AlphaSlideBar alphaSlideBar = findViewById(R.id.alphaSlideBar);
 colorPickerView.attachAlphaSlider(alphaSlideBar);
 ```
-If you want to implement vertically, use below attributes.
+We can make it vertically using the below attributes.
 ```gradle
-android:layout_width="280dp" // width should be set manually
+android:layout_width="280dp" // width must set a specific width size.
 android:layout_height="wrap_content"
 android:rotation="90"
 ```
 
-## BrightnessSlideBar(Optional)
+## BrightnessSlideBar
 BrightnessSlideBar changes the brightness of the selected color. <br><br>
-<img src="https://user-images.githubusercontent.com/24237865/52943593-d1e1af00-33b0-11e9-813a-557760e172ed.gif" align="left" width="31%">
+<img src="https://user-images.githubusercontent.com/24237865/90913583-6c440800-e417-11ea-8645-c5f6d1bf97df.gif" align="left" width="31%">
 
-`BrightnessSlideBar` on xml layout
+`BrightnessSlideBar` in XML layout
 ```gradle
 <com.skydoves.colorpickerview.sliders.BrightnessSlideBar
    android:id="@+id/brightnessSlide"
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
-   app:selector_BrightnessSlider="@drawable/wheel" // sets the selector drawable.
-   app:borderColor_BrightnessSlider="@android:color/darker_gray" // sets the border color.
-   app:borderSize_BrightnessSlider="5"/> // sets the border size.
+   app:selector_BrightnessSlider="@drawable/wheel" // sets a customized selector drawable.
+   app:borderColor_BrightnessSlider="@android:color/darker_gray" // sets a color of the border.
+   app:borderSize_BrightnessSlider="5"/> // sets a size of the border.
 ```
-`attachBrightnessSlider` method connects slider to the `ColorPickerView`.
+We can attach and connect the `BrightnessSlideBar` to our `ColorPickerView` using `attachBrightnessSlider` method.
 
 ```java
 BrightnessSlideBar brightnessSlideBar = findViewById(R.id.brightnessSlide);
 colorPickerView.attachBrightnessSlider(brightnessSlideBar);
 ```
-If you want to implement vertically, use below attributes.
+We can make it vertically using the below attributes.
 ```gradle
-android:layout_width="280dp" // width should be set manually
+android:layout_width="280dp" // width must set a specific width size.
 android:layout_height="wrap_content"
 android:rotation="90"
 ```
@@ -227,11 +310,10 @@ android:rotation="90"
 ![dialog0](https://user-images.githubusercontent.com/24237865/45362890-0d619b80-b611-11e8-857b-e12f82978b53.jpg) 
 ![dialog1](https://user-images.githubusercontent.com/24237865/45362892-0d619b80-b611-11e8-9cc5-25518a9d392a.jpg) <br>
 
-ColorPickerDialog can be used just like using AlertDialog and provides colors from any drawables. <br>
-ColorPickerDialog extends `AlertDialog`. So we can customize themes also. <br>
+`ColorPickerDialog` can be used just like an AlertDialog and it provides colors by tapping from any drawable. <br>
 
 ```java
-new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+new ColorPickerDialog.Builder(this)
       .setTitle("ColorPicker Dialog")
       .setPreferenceName("MyColorPickerDialog")
       .setPositiveButton(getString(R.string.confirm),
@@ -241,31 +323,42 @@ new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
                   setLayoutColor(envelope);
               }
           })
-       setNegativeButton(getString(R.string.cancel),
+       .setNegativeButton(getString(R.string.cancel),
           new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {
                   dialogInterface.dismiss();
               }
            })
-      .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
-      .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+      .attachAlphaSlideBar(true) // the default value is true.
+      .attachBrightnessSlideBar(true)  // the default value is true.
+      .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
       .show();
 ```
 
-If you need to customize the `ColorpickerView` on the dialog, you can get the instance of `ColorPickerView` from the `ColorpickerView.Builder`. but it should be done before shows dialog using `show()` method.
+we can get an instance of `ColorPickerView` from the `ColorPickerView.Builder` and we can customize it. <br>
 ```java
 ColorPickerView colorPickerView = builder.getColorPickerView();
 colorPickerView.setFlagView(new CustomFlag(this, R.layout.layout_flag)); // sets a custom flagView
 builder.show(); // shows the dialog
 ```
 
-## FlagView(Optional)
+## FlagView
+We can implement showing a `FlagView` above and below on the selector.<br>
+This library provides `BubbleFlagView` by default as we can see the [previews](https://github.com/skydoves/ColorPickerView#colorpickerview).<br>
+Here is the example code for implementing it.
+
+```java
+BubbleFlag bubbleFlag = new BubbleFlag(this);
+bubbleFlag.setFlagMode(FlagMode.FADE);
+colorPickerView.setFlagView(bubbleFlag);
+```
+
+We can also fully customize the `FlagView` like below.<br>
 ![flag0](https://user-images.githubusercontent.com/24237865/45364191-75fe4780-b614-11e8-81a5-04690a4392db.jpg) 
 ![flag1](https://user-images.githubusercontent.com/24237865/45364194-75fe4780-b614-11e8-844c-136d14c91560.jpg) <br>
 
-FlgaView implements showing a flag above a selector. This is optional.<br><br>
-First, create a layout for `FlagView` as your taste like below. 
+First, We need a customized layout like below.
 ```gradle
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -299,7 +392,7 @@ First, create a layout for `FlagView` as your taste like below.
 </LinearLayout>
 ```
 
-Second, create a custom class extending `FlagView`. This is an example code.
+Second, we need to create a class that extends `FlagView`. Here is an example code.
 ```java
 public class CustomFlag extends FlagView {
 
@@ -320,14 +413,14 @@ public class CustomFlag extends FlagView {
 }
 ```
 
-The last, set `FlagView` on the `ColorPickerView` using `setFlagView` method.
+And last, set the `FlagView` to the `ColorPickerView` using the `setFlagView` method.
 
 ```java
 colorPickerView.setFlagView(new CustomFlag(this, R.layout.layout_flag));
 ```
 
 ### FlagMode
-FlagMode decides the `FlagView`'s visibility action.
+`FlagMode` is an option to decides the visibility action of the `FlagView`.
 ```java
 colorPickerView.setFlagMode(FlagMode.ALWAYS); // showing always by tapping and dragging.
 colorPickerView.setFlagMode(FlagMode.LAST); // showing only when finger released.
@@ -335,7 +428,8 @@ colorPickerView.setFlagMode(FlagMode.LAST); // showing only when finger released
 
 ## AlphaTileView
 ![alphatileview](https://user-images.githubusercontent.com/24237865/45364416-09377d00-b615-11e8-9707-b83f55053480.jpg) <br>
-AlphaTileView visualizes ARGB color on the view. If you want to visualizes ARGB color on the general view, it will not be shown accurately. because it will be mixed with the parent view's background color. so if you want to visualize ARGB color accurately, should use `AlphaTileView`.<br>
+`AlphaTileView` visualizes ARGB colors over the view.<br>
+If we need to represent ARGB colors on the general view, it will not be showing accurately. Because a color will be mixed with the parent view's background color. so if we need to represent ARGB colors accurately, we can use the `AlphaTileView`.
 
 ```gradle
 <com.skydoves.colorpickerview.AlphaTileView
@@ -355,14 +449,19 @@ getColorEnvelope() | ColorEnvelope | gets the `ColorEnvelope` of the last select
 setPaletteDrawable(Drawable drawable) | void | changes palette drawable manually.
 setSelectorDrawable(Drawable drawable) | void | changes selector drawable manually.
 setSelectorPoint(int x, int y) | void | selects the specific coordinate of the palette manually.
+selectByHsvColor(@ColorInt int color) | void | changes selector's selected point by a specific color.
+selectByHsvColorRes(@ColorRes int resource) | void | changes selector's selected point by a specific color using a color resource.
+setHsvPaletteDrawable() | void | changes the palette drawable as the default drawable (ColorHsvPalette).
 selectCenter() | void | selects the center of the palette manually.
+setInitialColor(@ColorInt int color) | void | changes selector's selected point by a specific color initially.
+setInitialColorRes(@ColorRes int resource) | void | changes selector's selected point by a specific color initially using a color resource.
 setActionMode(ActionMode) | void | sets the color listener's trigger action mode.
-setFlagView(FlagView flagview) | void | sets `FlagView` on `ColorPickerView`.
+setFlagView(FlagView flagView) | void | sets `FlagView` on `ColorPickerView`.
 attachAlphaSlider | void | linking an `AlphaSlideBar` on the `ColorPickerView`.
 attachBrightnessSlider | void | linking an `BrightnessSlideBar` on the `ColorPickerView`.
 
 ## Other Libraries
-Other ColorPicker libraries are released!
+Here are other ColorPicker related libraries!
 
 ### ColorPickerPreference
 [A library](https://github.com/skydoves/ColorPickerPreference) that let you implement ColorPickerView, ColorPickerDialog, ColorPickerPreference. 
@@ -373,13 +472,13 @@ At [here](https://github.com/skydoves/Multi-ColorPicker) you can get a more spec
 
 ![screenshot1128436220](https://user-images.githubusercontent.com/24237865/45586566-4614b400-b934-11e8-9098-2d4341dd695e.png)
 
-## Supports
-If you feel like support me a coffee for my efforts, I would greatly appreciate it. <br><br>
-<a href="https://www.buymeacoffee.com/skydoves" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+## Find this library useful? :heart:
+Support it by joining [stargazers](https://github.com/skydoves/ColorPickerView/stargazers) for this repository. :star: <br>
+And __[follow](https://github.com/skydoves)__ me for my next creations! 🤩
 
 # License
 ```xml
-Copyright 2017 skydoves
+Copyright 2017 skydoves (Jaewoong Eum)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

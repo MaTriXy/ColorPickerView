@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package com.skydoves.colorpickerview.flag;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.FadeUtils;
 
 /** FlaView implements showing a flag above a selector. */
 @SuppressWarnings("unused")
@@ -36,6 +38,23 @@ public abstract class FlagView extends RelativeLayout {
 
   /** called whenever color is changed on {@link com.skydoves.colorpickerview.ColorPickerView}. */
   public abstract void onRefresh(ColorEnvelope colorEnvelope);
+
+  public void receiveOnTouchEvent(MotionEvent event) {
+    switch (event.getActionMasked()) {
+      case MotionEvent.ACTION_DOWN:
+        if (getFlagMode() == FlagMode.LAST) gone();
+        else if (getFlagMode() == FlagMode.FADE) FadeUtils.fadeIn(this);
+        break;
+      case MotionEvent.ACTION_MOVE:
+        if (getFlagMode() == FlagMode.LAST) gone();
+        break;
+      case MotionEvent.ACTION_UP:
+        if (getFlagMode() == FlagMode.LAST) visible();
+        else if (getFlagMode() == FlagMode.FADE) FadeUtils.fadeOut(this);
+      default:
+        visible();
+    }
+  }
 
   private void initializeLayout(int layout) {
     View inflated = LayoutInflater.from(getContext()).inflate(layout, this);

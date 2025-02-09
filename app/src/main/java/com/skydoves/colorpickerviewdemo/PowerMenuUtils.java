@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package com.skydoves.colorpickerviewdemo;
 import android.content.Context;
 import android.graphics.Color;
 import androidx.lifecycle.LifecycleOwner;
+import com.skydoves.powermenu.CircularEffect;
 import com.skydoves.powermenu.MenuAnimation;
-import com.skydoves.powermenu.MenuEffect;
 import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
-@SuppressWarnings("WeakerAccess")
 public class PowerMenuUtils {
   public static PowerMenu getPowerMenu(
       Context context,
@@ -39,7 +38,7 @@ public class PowerMenuUtils {
         .addItem(new PowerMenuItem("Dialog", false))
         .setLifecycleOwner(lifecycleOwner)
         .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT)
-        .setMenuEffect(MenuEffect.BODY)
+        .setCircularEffect(CircularEffect.BODY)
         .setMenuRadius(10f)
         .setMenuShadow(10f)
         .setTextColor(context.getResources().getColor(R.color.md_grey_800))

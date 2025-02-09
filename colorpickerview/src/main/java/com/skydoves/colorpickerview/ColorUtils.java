@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.skydoves.colorpickerview;
 
 import android.graphics.Color;
+import androidx.annotation.ColorInt;
 import java.util.Locale;
 
 /** ColorUtils a util class for changing the form of colors. */
-@SuppressWarnings("WeakerAccess")
-public class ColorUtils {
+class ColorUtils {
   /** changes color to string hex code. */
-  protected static String getHexCode(int color) {
+  public static String getHexCode(@ColorInt int color) {
     int a = Color.alpha(color);
     int r = Color.red(color);
     int g = Color.green(color);
@@ -32,7 +32,7 @@ public class ColorUtils {
   }
 
   /** changes color to argb integer array. */
-  protected static int[] getColorARGB(int color) {
+  public static int[] getColorARGB(@ColorInt int color) {
     int[] argb = new int[4];
     argb[0] = Color.alpha(color);
     argb[1] = Color.red(color);

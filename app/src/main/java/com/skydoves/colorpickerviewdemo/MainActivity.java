@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package com.skydoves.colorpickerviewdemo;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +32,8 @@ import com.skydoves.colorpickerview.AlphaTileView;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.flag.BubbleFlag;
+import com.skydoves.colorpickerview.flag.FlagMode;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.skydoves.colorpickerview.sliders.AlphaSlideBar;
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
@@ -42,8 +42,8 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import timber.log.Timber;
 
-@SuppressWarnings("ConstantConditions")
 public class MainActivity extends AppCompatActivity {
 
   private ColorPickerView colorPickerView;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean FLAG_SELECTOR = false;
 
   private PowerMenu powerMenu;
-  private OnMenuItemClickListener<PowerMenuItem> powerMenuItemClickListener =
+  private final OnMenuItemClickListener<PowerMenuItem> powerMenuItemClickListener =
       new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -78,18 +78,20 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    Timber.plant(new Timber.DebugTree());
 
     powerMenu = PowerMenuUtils.getPowerMenu(this, this, powerMenuItemClickListener);
 
     colorPickerView = findViewById(R.id.colorPickerView);
-    colorPickerView.setFlagView(new CustomFlag(this, R.layout.layout_flag));
+    BubbleFlag bubbleFlag = new BubbleFlag(this);
+    bubbleFlag.setFlagMode(FlagMode.FADE);
+    colorPickerView.setFlagView(bubbleFlag);
     colorPickerView.setColorListener(
-        new ColorEnvelopeListener() {
-          @Override
-          public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-            setLayoutColor(envelope);
-          }
-        });
+        (ColorEnvelopeListener)
+            (envelope, fromUser) -> {
+              Timber.d("color: %s", envelope.getHexCode());
+              setLayoutColor(envelope);
+            });
 
     // attach alphaSlideBar
     final AlphaSlideBar alphaSlideBar = findViewById(R.id.alphaSlideBar);
@@ -122,9 +124,11 @@ public class MainActivity extends AppCompatActivity {
 
   /** changes palette image using drawable resource. */
   private void palette() {
-    if (FLAG_PALETTE)
-      colorPickerView.setPaletteDrawable(ContextCompat.getDrawable(this, R.drawable.palette));
-    else colorPickerView.setPaletteDrawable(ContextCompat.getDrawable(this, R.drawable.palettebar));
+    if (FLAG_PALETTE) {
+      colorPickerView.setHsvPaletteDrawable();
+    } else {
+      colorPickerView.setPaletteDrawable(ContextCompat.getDrawable(this, R.drawable.palettebar));
+    }
     FLAG_PALETTE = !FLAG_PALETTE;
   }
 
@@ -137,37 +141,26 @@ public class MainActivity extends AppCompatActivity {
 
   /** changes selector image using drawable resource. */
   private void selector() {
-    if (FLAG_SELECTOR)
+    if (FLAG_SELECTOR) {
       colorPickerView.setSelectorDrawable(ContextCompat.getDrawable(this, R.drawable.wheel));
-    else
+    } else {
       colorPickerView.setSelectorDrawable(ContextCompat.getDrawable(this, R.drawable.wheel_dark));
+    }
     FLAG_SELECTOR = !FLAG_SELECTOR;
   }
 
   /** shows ColorPickerDialog */
   private void dialog() {
     ColorPickerDialog.Builder builder =
-        new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+        new ColorPickerDialog.Builder(this)
             .setTitle("ColorPicker Dialog")
             .setPreferenceName("Test")
             .setPositiveButton(
                 getString(R.string.confirm),
-                new ColorEnvelopeListener() {
-                  @Override
-                  public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                    setLayoutColor(envelope);
-                  }
-                })
+                (ColorEnvelopeListener) (envelope, fromUser) -> setLayoutColor(envelope))
             .setNegativeButton(
-                getString(R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                  @Override
-                  public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                  }
-                });
-    ColorPickerView colorPickerView = builder.getColorPickerView();
-    colorPickerView.setFlagView(new CustomFlag(this, R.layout.layout_flag));
+                getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss());
+    builder.getColorPickerView().setFlagView(new BubbleFlag(this));
     builder.show();
   }
 
@@ -179,10 +172,12 @@ public class MainActivity extends AppCompatActivity {
     if (requestCode == 1000 && resultCode == RESULT_OK) {
       try {
         final Uri imageUri = data.getData();
-        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-        Drawable drawable = new BitmapDrawable(getResources(), selectedImage);
-        colorPickerView.setPaletteDrawable(drawable);
+        if (imageUri != null) {
+          final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+          final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+          Drawable drawable = new BitmapDrawable(getResources(), selectedImage);
+          colorPickerView.setPaletteDrawable(drawable);
+        }
       } catch (FileNotFoundException e) {
         e.printStackTrace();
       }
@@ -191,7 +186,10 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-    if (powerMenu.isShowing()) powerMenu.dismiss();
-    else super.onBackPressed();
+    if (powerMenu.isShowing()) {
+      powerMenu.dismiss();
+    } else {
+      super.onBackPressed();
+    }
   }
 }

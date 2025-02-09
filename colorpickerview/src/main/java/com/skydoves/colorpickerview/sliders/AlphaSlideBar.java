@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import androidx.annotation.ColorInt;
+import androidx.appcompat.content.res.AppCompatResources;
 import com.skydoves.colorpickerview.R;
 import com.skydoves.colorpickerview.preference.ColorPickerPreferenceManager;
 
@@ -35,7 +37,7 @@ import com.skydoves.colorpickerview.preference.ColorPickerPreferenceManager;
 public class AlphaSlideBar extends AbstractSlider {
 
   private Bitmap backgroundBitmap;
-  private AlphaTileDrawable drawable = new AlphaTileDrawable();
+  private final AlphaTileDrawable drawable = new AlphaTileDrawable();
 
   public AlphaSlideBar(Context context) {
     super(context);
@@ -57,12 +59,18 @@ public class AlphaSlideBar extends AbstractSlider {
   protected void getAttrs(AttributeSet attrs) {
     TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.AlphaSlideBar);
     try {
-      if (a.hasValue(R.styleable.AlphaSlideBar_selector_AlphaSlideBar))
-        selectorDrawable = a.getDrawable(R.styleable.AlphaSlideBar_selector_AlphaSlideBar);
-      if (a.hasValue(R.styleable.AlphaSlideBar_borderColor_AlphaSlideBar))
+      if (a.hasValue(R.styleable.AlphaSlideBar_selector_AlphaSlideBar)) {
+        int resourceId = a.getResourceId(R.styleable.AlphaSlideBar_selector_AlphaSlideBar, -1);
+        if (resourceId != -1) {
+          selectorDrawable = AppCompatResources.getDrawable(getContext(), resourceId);
+        }
+      }
+      if (a.hasValue(R.styleable.AlphaSlideBar_borderColor_AlphaSlideBar)) {
         borderColor = a.getColor(R.styleable.AlphaSlideBar_borderColor_AlphaSlideBar, borderColor);
-      if (a.hasValue(R.styleable.AlphaSlideBar_borderSize_AlphaSlideBar))
+      }
+      if (a.hasValue(R.styleable.AlphaSlideBar_borderSize_AlphaSlideBar)) {
         borderSize = a.getInt(R.styleable.AlphaSlideBar_borderSize_AlphaSlideBar, borderSize);
+      }
     } finally {
       a.recycle();
     }
@@ -71,10 +79,12 @@ public class AlphaSlideBar extends AbstractSlider {
   @Override
   protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
     super.onSizeChanged(width, height, oldWidth, oldHeight);
-    backgroundBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-    Canvas backgroundCanvas = new Canvas(backgroundBitmap);
-    drawable.setBounds(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());
-    drawable.draw(backgroundCanvas);
+    if (width > 0 && height > 0) {
+      backgroundBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+      Canvas backgroundCanvas = new Canvas(backgroundBitmap);
+      drawable.setBounds(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());
+      drawable.draw(backgroundCanvas);
+    }
   }
 
   @Override
@@ -97,11 +107,12 @@ public class AlphaSlideBar extends AbstractSlider {
 
   @Override
   public void onInflateFinished() {
-    int defaultPosition = getMeasuredWidth() - selector.getMeasuredWidth();
+    int defaultPosition = getMeasuredWidth();
     if (getPreferenceName() != null) {
       updateSelectorX(
           ColorPickerPreferenceManager.getInstance(getContext())
-              .getAlphaSliderPosition(getPreferenceName(), defaultPosition));
+                  .getAlphaSliderPosition(getPreferenceName(), defaultPosition)
+              + getSelectorSize());
     } else {
       selector.setX(defaultPosition);
     }
@@ -114,7 +125,7 @@ public class AlphaSlideBar extends AbstractSlider {
   }
 
   @Override
-  public int assembleColor() {
+  public @ColorInt int assembleColor() {
     float[] hsv = new float[3];
     Color.colorToHSV(getColor(), hsv);
     int alpha = (int) (selectorPosition * 255);

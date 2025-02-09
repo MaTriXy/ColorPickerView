@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
 
 package com.skydoves.colorpickerview;
 
+import androidx.annotation.ColorInt;
+
 /** ColorEnvelope is a wrapper class of colors for provide various forms of color. */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings("unused")
 public class ColorEnvelope {
 
-  private int color;
+  @ColorInt private int color;
   private String hexCode;
   private int[] argb;
 
-  public ColorEnvelope(int color) {
+  public ColorEnvelope(@ColorInt int color) {
     this.color = color;
     this.hexCode = ColorUtils.getHexCode(color);
     this.argb = ColorUtils.getColorARGB(color);
@@ -35,7 +37,7 @@ public class ColorEnvelope {
    *
    * @return color.
    */
-  public int getColor() {
+  public @ColorInt int getColor() {
     return color;
   }
 

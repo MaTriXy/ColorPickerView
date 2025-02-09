@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.skydoves.colorpickerview;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -24,9 +23,10 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ListAdapter;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import com.skydoves.colorpickerview.databinding.DialogColorpickerColorpickerviewSkydovesBinding;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.skydoves.colorpickerview.listeners.ColorListener;
 import com.skydoves.colorpickerview.listeners.ColorPickerViewListener;
@@ -38,7 +38,7 @@ import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
  * ColorPickerDialog is a dialog what having {@link ColorPickerView}, {@link AlphaSlideBar} and
  * {@link BrightnessSlideBar}.
  */
-@SuppressWarnings({"WeakerAccess", "unchecked", "unused"})
+@SuppressWarnings("unused")
 public class ColorPickerDialog extends AlertDialog {
 
   private ColorPickerView colorPickerView;
@@ -48,12 +48,12 @@ public class ColorPickerDialog extends AlertDialog {
   }
 
   /** Builder class for create {@link ColorPickerDialog}. */
-  @SuppressWarnings({"ConstantConditions", "UnusedReturnValue"})
   public static class Builder extends AlertDialog.Builder {
+    private DialogColorpickerColorpickerviewSkydovesBinding dialogBinding;
     private ColorPickerView colorPickerView;
-    private boolean alphaSlideBar = true;
-    private boolean brightnessSlideBar = true;
-    private View parentView;
+    private boolean shouldAttachAlphaSlideBar = true;
+    private boolean shouldAttachBrightnessSlideBar = true;
+    private int bottomSpace = SizeUtils.dp2Px(getContext(), 10);
 
     public Builder(Context context) {
       super(context);
@@ -65,24 +65,21 @@ public class ColorPickerDialog extends AlertDialog {
       onCreate();
     }
 
-    @SuppressLint("InflateParams")
     private void onCreate() {
-      LayoutInflater layoutInflater =
-          (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      this.parentView = layoutInflater.inflate(R.layout.layout_dialog_colorpicker, null);
-      this.colorPickerView = parentView.findViewById(R.id.ColorPickerView);
-      this.colorPickerView.attachAlphaSlider(
-          (AlphaSlideBar) parentView.findViewById(R.id.AlphaSlideBar));
-      this.colorPickerView.attachBrightnessSlider(
-          (BrightnessSlideBar) parentView.findViewById(R.id.BrightnessSlideBar));
-      colorPickerView.setColorListener(
+      LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+      this.dialogBinding =
+          DialogColorpickerColorpickerviewSkydovesBinding.inflate(layoutInflater, null, false);
+      this.colorPickerView = dialogBinding.colorPickerView;
+      this.colorPickerView.attachAlphaSlider(dialogBinding.alphaSlideBar);
+      this.colorPickerView.attachBrightnessSlider(dialogBinding.brightnessSlideBar);
+      this.colorPickerView.setColorListener(
           new ColorEnvelopeListener() {
             @Override
             public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-              // nothing
+              // no stubs
             }
           });
-      super.setView(parentView);
+      super.setView(dialogBinding.getRoot());
     }
 
     /**
@@ -101,7 +98,8 @@ public class ColorPickerDialog extends AlertDialog {
      * @return {@link Builder}.
      */
     public Builder setColorPickerView(ColorPickerView colorPickerView) {
-      this.colorPickerView = colorPickerView;
+      this.dialogBinding.colorPickerViewFrame.removeAllViews();
+      this.dialogBinding.colorPickerViewFrame.addView(colorPickerView);
       return this;
     }
 
@@ -112,7 +110,7 @@ public class ColorPickerDialog extends AlertDialog {
      * @return {@link Builder}.
      */
     public Builder attachAlphaSlideBar(boolean value) {
-      this.alphaSlideBar = value;
+      this.shouldAttachAlphaSlideBar = value;
       return this;
     }
 
@@ -123,7 +121,7 @@ public class ColorPickerDialog extends AlertDialog {
      * @return {@link Builder}.
      */
     public Builder attachBrightnessSlideBar(boolean value) {
-      this.brightnessSlideBar = value;
+      this.shouldAttachBrightnessSlideBar = value;
       return this;
     }
 
@@ -141,13 +139,24 @@ public class ColorPickerDialog extends AlertDialog {
     }
 
     /**
+     * sets the margin of the bottom. this space visible when {@link AlphaSlideBar} or {@link
+     * BrightnessSlideBar} is attached.
+     *
+     * @param bottomSpace space of the bottom.
+     * @return {@link Builder}.
+     */
+    public Builder setBottomSpace(int bottomSpace) {
+      this.bottomSpace = SizeUtils.dp2Px(getContext(), bottomSpace);
+      return this;
+    }
+
+    /**
      * sets positive button with {@link ColorPickerViewListener} on the {@link ColorPickerDialog}.
      *
      * @param textId string resource integer id.
      * @param colorListener {@link ColorListener}.
      * @return {@link Builder}.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public Builder setPositiveButton(int textId, final ColorPickerViewListener colorListener) {
       super.setPositiveButton(textId, getOnClickListener(colorListener));
       return this;
@@ -160,7 +169,6 @@ public class ColorPickerDialog extends AlertDialog {
      * @param colorListener {@link ColorListener}.
      * @return {@link Builder}.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public Builder setPositiveButton(
         CharSequence text, final ColorPickerViewListener colorListener) {
       super.setPositiveButton(text, getOnClickListener(colorListener));
@@ -184,10 +192,10 @@ public class ColorPickerDialog extends AlertDialog {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
           if (colorListener instanceof ColorListener) {
-            ((ColorListener) colorListener).onColorSelected(colorPickerView.getColor(), true);
+            ((ColorListener) colorListener).onColorSelected(getColorPickerView().getColor(), true);
           } else if (colorListener instanceof ColorEnvelopeListener) {
             ((ColorEnvelopeListener) colorListener)
-                .onColorSelected(colorPickerView.getColorEnvelope(), true);
+                .onColorSelected(getColorPickerView().getColorEnvelope(), true);
           }
           if (getColorPickerView() != null) {
             ColorPickerPreferenceManager.getInstance(getContext())
@@ -203,41 +211,40 @@ public class ColorPickerDialog extends AlertDialog {
      * @return {@link AlertDialog}.
      */
     @Override
-    public AlertDialog show() {
-      if (colorPickerView != null) {
-        FrameLayout frameLayout = parentView.findViewById(R.id.colorPickerViewFrame);
-        frameLayout.removeAllViews();
-        frameLayout.addView(colorPickerView);
+    @NonNull
+    public AlertDialog create() {
+      if (getColorPickerView() != null) {
+        this.dialogBinding.colorPickerViewFrame.removeAllViews();
+        this.dialogBinding.colorPickerViewFrame.addView(getColorPickerView());
 
-        if (alphaSlideBar && colorPickerView.getAlphaSlideBar() != null) {
-          FrameLayout alphaSlideBarFrameLayout = parentView.findViewById(R.id.alphaSlideBarFrame);
-          alphaSlideBarFrameLayout.removeAllViews();
-          alphaSlideBarFrameLayout.addView(colorPickerView.getAlphaSlideBar());
-          colorPickerView.attachAlphaSlider(
-              (AlphaSlideBar) parentView.findViewById(R.id.AlphaSlideBar));
+        AlphaSlideBar alphaSlideBar = getColorPickerView().getAlphaSlideBar();
+        if (shouldAttachAlphaSlideBar && alphaSlideBar != null) {
+          this.dialogBinding.alphaSlideBarFrame.removeAllViews();
+          this.dialogBinding.alphaSlideBarFrame.addView(alphaSlideBar);
+          this.getColorPickerView().attachAlphaSlider(alphaSlideBar);
+        } else if (!shouldAttachAlphaSlideBar) {
+          this.dialogBinding.alphaSlideBarFrame.removeAllViews();
         }
 
-        if (brightnessSlideBar && colorPickerView.getBrightnessSlider() != null) {
-          FrameLayout brightnessSlideBarFrame =
-              parentView.findViewById(R.id.brightnessSlideBarFrame);
-          brightnessSlideBarFrame.removeAllViews();
-          brightnessSlideBarFrame.addView(colorPickerView.getBrightnessSlider());
-          colorPickerView.attachBrightnessSlider(
-              (BrightnessSlideBar) parentView.findViewById(R.id.BrightnessSlideBar));
+        BrightnessSlideBar brightnessSlideBar = getColorPickerView().getBrightnessSlider();
+        if (shouldAttachBrightnessSlideBar && brightnessSlideBar != null) {
+          this.dialogBinding.brightnessSlideBarFrame.removeAllViews();
+          this.dialogBinding.brightnessSlideBarFrame.addView(brightnessSlideBar);
+          this.getColorPickerView().attachBrightnessSlider(brightnessSlideBar);
+        } else if (!shouldAttachBrightnessSlideBar) {
+          this.dialogBinding.brightnessSlideBarFrame.removeAllViews();
+        }
+
+        if (!shouldAttachAlphaSlideBar && !shouldAttachBrightnessSlideBar) {
+          this.dialogBinding.spaceBottom.setVisibility(View.GONE);
+        } else {
+          this.dialogBinding.spaceBottom.setVisibility(View.VISIBLE);
+          this.dialogBinding.spaceBottom.getLayoutParams().height = bottomSpace;
         }
       }
 
-      if (!alphaSlideBar) {
-        FrameLayout alphaSlideBarFrameLayout = parentView.findViewById(R.id.alphaSlideBarFrame);
-        alphaSlideBarFrameLayout.removeAllViews();
-      }
-
-      if (!brightnessSlideBar) {
-        FrameLayout brightnessSlideBarFrame = parentView.findViewById(R.id.brightnessSlideBarFrame);
-        brightnessSlideBarFrame.removeAllViews();
-      }
-      super.setView(parentView);
-      return super.show();
+      super.setView(dialogBinding.getRoot());
+      return super.create();
     }
 
     @Override

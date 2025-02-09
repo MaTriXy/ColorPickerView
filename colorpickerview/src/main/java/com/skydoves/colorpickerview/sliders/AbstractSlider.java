@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 skydoves
+ * Designed and developed by 2017 skydoves (Jaewoong Eum)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,19 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.FloatRange;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import com.skydoves.colorpickerview.ActionMode;
 import com.skydoves.colorpickerview.ColorPickerView;
 
 /** AbstractSlider is the abstract class for implementing sliders. */
-@SuppressWarnings("IntegerDivisionInFloatingPointContext")
-public abstract class AbstractSlider extends FrameLayout {
+@SuppressWarnings("unused")
+abstract class AbstractSlider extends FrameLayout {
 
   public ColorPickerView colorPickerView;
   protected Paint colorPaint;
@@ -54,6 +61,13 @@ public abstract class AbstractSlider extends FrameLayout {
   public AbstractSlider(Context context) {
     super(context);
     onCreate();
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    selector.setVisibility(enabled ? VISIBLE : INVISIBLE);
+    this.setClickable(enabled);
   }
 
   public AbstractSlider(Context context, AttributeSet attrs) {
@@ -86,7 +100,7 @@ public abstract class AbstractSlider extends FrameLayout {
    *
    * @return assembled color.
    */
-  public abstract int assembleColor();
+  public abstract @ColorInt int assembleColor();
 
   private void onCreate() {
     this.colorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -98,13 +112,7 @@ public abstract class AbstractSlider extends FrameLayout {
 
     selector = new ImageView(getContext());
     if (selectorDrawable != null) {
-      selector.setImageDrawable(selectorDrawable);
-
-      FrameLayout.LayoutParams thumbParams =
-          new LayoutParams(
-              ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-      thumbParams.gravity = Gravity.CENTER_VERTICAL;
-      addView(selector, thumbParams);
+      setSelectorDrawable(selectorDrawable);
     }
 
     initializeSelector();
@@ -129,12 +137,13 @@ public abstract class AbstractSlider extends FrameLayout {
   @SuppressLint("ClickableViewAccessibility")
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    if (!this.isEnabled()) {
+      return false;
+    }
+
     if (colorPickerView != null) {
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_UP:
-          selector.setPressed(true);
-          onTouchReceived(event);
-          return true;
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_MOVE:
           selector.setPressed(true);
@@ -144,7 +153,9 @@ public abstract class AbstractSlider extends FrameLayout {
           selector.setPressed(false);
           return false;
       }
-    } else return false;
+    } else {
+      return false;
+    }
   }
 
   private void onTouchReceived(MotionEvent event) {
@@ -154,16 +165,21 @@ public abstract class AbstractSlider extends FrameLayout {
     if (eventX < left) eventX = left;
     if (eventX > right) eventX = right;
     selectorPosition = (eventX - left) / (right - left);
+    if (selectorPosition > 1.0f) selectorPosition = 1.0f;
 
     Point snapPoint = new Point((int) event.getX(), (int) event.getY());
-    selectedX = snapPoint.x;
-    selector.setX(snapPoint.x - (selector.getMeasuredWidth() / 2));
+    selectedX = (int) getBoundaryX(snapPoint.x);
+    selector.setX(selectedX);
     if (colorPickerView.getActionMode() == ActionMode.LAST) {
       if (event.getAction() == MotionEvent.ACTION_UP) {
         colorPickerView.fireColorListener(assembleColor(), true);
       }
     } else {
       colorPickerView.fireColorListener(assembleColor(), true);
+    }
+
+    if (colorPickerView.getFlagView() != null) {
+      colorPickerView.getFlagView().receiveOnTouchEvent(event);
     }
 
     int maxPos = getMeasuredWidth() - selector.getMeasuredWidth();
@@ -175,12 +191,41 @@ public abstract class AbstractSlider extends FrameLayout {
     float left = selector.getMeasuredWidth();
     float right = getMeasuredWidth() - selector.getMeasuredWidth();
     selectorPosition = (x - left) / (right - left);
-    selector.setX(x - (selector.getMeasuredWidth() / 2));
-    selectedX = x;
-    int maxPos = getMeasuredWidth() - selector.getMeasuredWidth();
-    if (selector.getX() >= maxPos) selector.setX(maxPos);
-    if (selector.getX() <= 0) selector.setX(0);
+    if (selectorPosition > 1.0f) selectorPosition = 1.0f;
+    selectedX = (int) getBoundaryX(x);
+    selector.setX(selectedX);
     colorPickerView.fireColorListener(assembleColor(), false);
+  }
+
+  public void setSelectorPosition(@FloatRange(from = 0.0, to = 1.0) float selectorPosition) {
+    this.selectorPosition = Math.min(selectorPosition, 1.0f);
+    float x = (getMeasuredWidth() * selectorPosition) - getSelectorSize() - getBorderHalfSize();
+    selectedX = (int) getBoundaryX(x);
+    selector.setX(selectedX);
+  }
+
+  public void setSelectorByHalfSelectorPosition(
+      @FloatRange(from = 0.0, to = 1.0) float selectorPosition) {
+    this.selectorPosition = Math.min(selectorPosition, 1.0f);
+    float x =
+        (getMeasuredWidth() * selectorPosition) - (getSelectorSize() * 0.5f) - getBorderHalfSize();
+    selectedX = (int) getBoundaryX(x);
+    selector.setX(selectedX);
+  }
+
+  private float getBoundaryX(float x) {
+    int maxPos = getMeasuredWidth() - selector.getMeasuredWidth();
+    if (x >= maxPos) return maxPos;
+    if (x <= getSelectorSize()) return 0;
+    return x - getSelectorSize();
+  }
+
+  protected int getSelectorSize() {
+    return (int) (selector.getMeasuredWidth());
+  }
+
+  protected int getBorderHalfSize() {
+    return (int) (borderSize * 0.5f);
   }
 
   private void initializeSelector() {
@@ -197,6 +242,73 @@ public abstract class AbstractSlider extends FrameLayout {
                 onInflateFinished();
               }
             });
+  }
+
+  /**
+   * sets a drawable of the selector.
+   *
+   * @param drawable drawable of the selector.
+   */
+  public void setSelectorDrawable(Drawable drawable) {
+    removeView(selector);
+    this.selectorDrawable = drawable;
+    this.selector.setImageDrawable(drawable);
+    FrameLayout.LayoutParams thumbParams =
+        new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    thumbParams.gravity = Gravity.CENTER_VERTICAL;
+    addView(selector, thumbParams);
+  }
+
+  /**
+   * sets a drawable resource of the selector.
+   *
+   * @param resource a drawable resource of the selector.
+   */
+  public void setSelectorDrawableRes(@DrawableRes int resource) {
+    Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), resource, null);
+    setSelectorDrawable(drawable);
+  }
+
+  /**
+   * sets a color of the slider border.
+   *
+   * @param color color of the slider border.
+   */
+  public void setBorderColor(@ColorInt int color) {
+    this.borderColor = color;
+    this.borderPaint.setColor(color);
+    invalidate();
+  }
+
+  /**
+   * sets a color resource of the slider border.
+   *
+   * @param resource color resource of the slider border.
+   */
+  public void setBorderColorRes(@ColorRes int resource) {
+    int color = ContextCompat.getColor(getContext(), resource);
+    setBorderColor(color);
+  }
+
+  /**
+   * sets a size of the slide border.
+   *
+   * @param borderSize ize of the slide border.
+   */
+  public void setBorderSize(int borderSize) {
+    this.borderSize = borderSize;
+    this.borderPaint.setStrokeWidth(borderSize);
+    invalidate();
+  }
+
+  /**
+   * sets a size of the slide border using dimension resource.
+   *
+   * @param resource a size of the slide border.
+   */
+  public void setBorderSizeRes(@DimenRes int resource) {
+    int borderSize = (int) getContext().getResources().getDimension(resource);
+    setBorderSize(borderSize);
   }
 
   /** called when the inflating finished. */
